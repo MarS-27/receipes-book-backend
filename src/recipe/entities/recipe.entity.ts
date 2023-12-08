@@ -34,7 +34,7 @@ export class Recipe extends Base {
   stages: RecipeStage[];
 
   @ApiProperty({ type: User })
-  @ManyToOne(() => User, (user) => user.recipe, {
+  @ManyToOne(() => User, (user) => user.recipes, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })

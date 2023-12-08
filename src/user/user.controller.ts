@@ -2,14 +2,13 @@ import {
   Body,
   ConflictException,
   Controller,
-  Get,
+  Delete,
   Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -17,7 +16,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { TMessage } from '../types/global-types';
 import { UserService } from './user.service';
@@ -46,5 +44,23 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<TMessage> {
     return this.userService.updateUserData(req.user.id, updateUserDto);
+  }
+
+  @ApiOperation({ summary: 'Delete User Profile' })
+  @ApiOkResponse({
+    description: 'User has been successfully deleted.',
+  })
+  @ApiBearerAuth('Token')
+  @ApiNotFoundResponse({ description: 'User does not exist.' })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occurred when deleting the user profile.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not have Token. User Unauthorized.',
+  })
+  @Delete('delete-user')
+  @UseGuards(JwtAuthGuard)
+  deleteUser(@Request() req: SessionRequest): Promise<TMessage> {
+    return this.userService.deleteUserProfile(req.user.id);
   }
 }

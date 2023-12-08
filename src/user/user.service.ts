@@ -91,4 +91,33 @@ export class UserService {
       await queryRunner.release();
     }
   }
+
+  async deleteUserProfile(userId: number): Promise<TMessage> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException(`User does not exist.`);
+    }
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    console.log(user.recipes);
+
+    try {
+      await queryRunner.manager.delete(User, userId);
+
+      await queryRunner.commitTransaction();
+      return { message: 'User has been deleted' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw new InternalServerErrorException(
+        'An error occurred when deleting the user.',
+      );
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

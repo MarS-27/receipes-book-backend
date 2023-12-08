@@ -32,7 +32,7 @@ export class User extends Base {
 
   @ApiProperty()
   @OneToMany(() => Recipe, (recipe) => recipe.user)
-  recipe: Recipe[];
+  recipes: Recipe[];
 
   //   @ApiProperty()
   //   @OneToMany(() => Expense, (expense) => expense.user)
