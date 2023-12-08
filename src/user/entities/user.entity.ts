@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
+import { Recipe } from 'src/recipe/entities/recipe.entity';
 import { Base } from 'src/utils/base';
 import { Column, Entity, OneToMany } from 'typeorm';
 
@@ -21,13 +22,17 @@ export class User extends Base {
   @Exclude()
   password: string;
 
-  @ApiProperty({ description: 'User role (admin or user)' })
-  @Column({ default: 'user' })
-  role: string;
+  @ApiProperty({
+    description:
+      'File path on Cloudinary, got as result after uploud image on Cloudinary.',
+    example: 'user-images/wdndt6e93sp6dtncoksc',
+  })
+  @Column({ nullable: true })
+  img: string | null;
 
-  //   @ApiProperty()
-  //   @OneToMany(() => Wallet, (wallet) => wallet.user)
-  //   wallet: Wallet[];
+  @ApiProperty()
+  @OneToMany(() => Recipe, (recipe) => recipe.user)
+  recipe: Recipe[];
 
   //   @ApiProperty()
   //   @OneToMany(() => Expense, (expense) => expense.user)

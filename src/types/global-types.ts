@@ -1,3 +1,5 @@
+import { ApiProperty } from '@nestjs/swagger/dist';
+
 export type TToken = {
   token: string;
 };
@@ -9,7 +11,27 @@ export type TMessage = {
 export type TLogin = {
   id: number;
   email: string;
-  role: string;
+  img: string;
   userName: string;
   token: string;
 };
+
+export class RecipeStage {
+  @ApiProperty({ nullable: false, example: 1 })
+  stageNumber: number;
+
+  @ApiProperty({
+    description:
+      'File path on Cloudinary, got as result after uploud image on Cloudinary.',
+    example: 'recipe-images/peatzskzjs6cyezperkx',
+    nullable: true,
+  })
+  img: string | null;
+
+  @ApiProperty({
+    nullable: false,
+    example:
+      'Heat oil in a large pot over medium-high heat; add beef and cook until well browned.',
+  })
+  description: string;
+}

@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from 'src/auth/strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Recipe } from './entities/recipe.entity';
+import { RecipeController } from './recipe.controller';
+import { RecipeService } from './recipe.service';
 import { User } from 'src/user/entities/user.entity';
-import { AdminService } from './admin.service';
-import { AdminController } from './admin.controller';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Recipe]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -19,8 +20,8 @@ import { AdminController } from './admin.controller';
       inject: [ConfigService],
     }),
   ],
-  providers: [AdminService, JwtStrategy],
-  controllers: [AdminController],
-  exports: [AdminService],
+  providers: [RecipeService, JwtModule, CloudinaryService],
+  controllers: [RecipeController],
+  exports: [RecipeService],
 })
-export class AdminModule {}
+export class RecipeModule {}
