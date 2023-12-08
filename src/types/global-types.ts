@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger/dist';
+import { User } from 'src/user/entities/user.entity';
 
 export type TToken = {
   token: string;
@@ -8,13 +9,16 @@ export type TMessage = {
   message: string;
 };
 
-export type TLogin = {
+export type TTUserRequest = {
   id: number;
   email: string;
   img: string;
   userName: string;
-  token: string;
 };
+
+export type TLogin = TTUserRequest & TToken;
+
+export type SessionRequest = Express.Request & { user: TTUserRequest };
 
 export class RecipeStage {
   @ApiProperty({ nullable: false, example: 1 })

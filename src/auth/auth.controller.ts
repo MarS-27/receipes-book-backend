@@ -19,7 +19,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import type { TLogin, TToken } from 'src/types/global-types';
+import type { SessionRequest, TLogin, TToken } from 'src/types/global-types';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registration-user.dto';
@@ -56,7 +56,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   async login(
     @Body() LoginUserDto: LoginUserDto,
-    @Request() req,
+    @Request() req: SessionRequest,
   ): Promise<TLogin> {
     return this.authService.login(req.user);
   }
@@ -71,7 +71,7 @@ export class AuthController {
   })
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req) {
+  getProfile(@Request() req: SessionRequest) {
     return req.user;
   }
 }

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { TLogin } from 'src/types/global-types';
+import { TLogin, TTUserRequest } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 
@@ -28,7 +28,7 @@ export class AuthService {
     throw new UnauthorizedException('Incorrect User Data!');
   }
 
-  async login(user: User): Promise<TLogin> {
+  async login(user: TTUserRequest): Promise<TLogin> {
     const { id, email, img, userName } = user;
     return {
       id,

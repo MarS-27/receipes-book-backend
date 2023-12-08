@@ -28,19 +28,19 @@ export class RecipeService {
   ): Promise<TMessage> {
     const queryRunner = this.dataSource.createQueryRunner();
 
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User does not exist.`);
+    }
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      const user = await this.userRepository.findOne({
-        where: { id: userId },
-      });
-
-      if (!user) {
-        throw new NotFoundException(`User does not exist.`);
-      }
-
-      const createRecipe = this.recipeRepository.create({
+      await queryRunner.manager.save(Recipe, {
         title: createRecipeDto.title,
         titleImg: createRecipeDto.titleImg,
         description: createRecipeDto.description,
@@ -49,7 +49,6 @@ export class RecipeService {
         user,
       });
 
-      await queryRunner.manager.save(createRecipe);
       await queryRunner.commitTransaction();
       return { message: 'Recipe has been succesfully created' };
     } catch (err) {

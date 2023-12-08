@@ -1,15 +1,14 @@
 import {
   Body,
-  Request,
   Controller,
   Post,
+  Request,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOperation,
@@ -18,7 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RecipeService } from 'src/recipe/recipe.service';
-import { TMessage } from 'src/types/global-types';
+import { SessionRequest, TMessage } from 'src/types/global-types';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 
 @ApiTags('Recipe Endpoints')
@@ -37,7 +36,7 @@ export class RecipeController {
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   async createTask(
-    @Request() req,
+    @Request() req: SessionRequest,
     @Body() createRecipeDto: CreateRecipeDto,
   ): Promise<TMessage> {
     return this.recipeService.createRecipe(req.user.id, createRecipeDto);

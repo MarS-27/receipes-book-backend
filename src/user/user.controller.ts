@@ -1,7 +1,16 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  Put,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -10,30 +19,32 @@ import {
 } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { User } from './entities/user.entity';
+import { TMessage } from '../types/global-types';
 import { UserService } from './user.service';
+import { SessionRequest } from 'src/types/global-types';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('User Endpoints')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: 'Get User Profile' })
+  @ApiOperation({ summary: 'Update User Profile' })
   @ApiBearerAuth('Token')
-  @ApiOkResponse({
-    description: 'User Profile has successfully got.',
-    type: User,
+  @ApiOkResponse({ description: 'User profile has been updated.' })
+  @ApiNotFoundResponse({ description: 'User is not found.' })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occured when updating the user.',
   })
-  @ApiNotFoundResponse({ description: 'User not found.' })
   @ApiUnauthorizedResponse({
     description: 'User does not have Token. User Unauthorized.',
   })
-  @ApiConflictResponse({
-    description: 'Current user does not have any rights.',
-  })
-  @Get('/account')
+  @Put('/update')
   @UseGuards(JwtAuthGuard)
-  getUserData(@Request() req): Promise<User> {
-    return this.userService.getUserData(req.user.id);
+  updateUserData(
+    @Request() req: SessionRequest,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<TMessage> {
+    return this.userService.updateUserData(req.user.id, updateUserDto);
   }
 }

@@ -1,23 +1,24 @@
 import {
-  Injectable,
   BadRequestException,
+  Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { RegisterUserDto } from 'src/auth/dto/registration-user.dto';
-import { TToken } from 'src/types/global-types';
+import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { instanceToPlain } from 'class-transformer';
+import { RegisterUserDto } from 'src/auth/dto/registration-user.dto';
+import { TMessage, TToken } from 'src/types/global-types';
+import { DataSource, Repository } from 'typeorm';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private dataSource: DataSource,
   ) {}
 
   async findOne(email: string): Promise<User | undefined> {
@@ -58,13 +59,36 @@ export class UserService {
     }
   }
 
-  async getUserData(userId: number): Promise<User> {
-    const userData = await this.userRepository.findOne({
+  async updateUserData(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<TMessage> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    const userProfile = await this.userRepository.findOne({
       where: { id: userId },
     });
-    if (!userData) {
-      throw new NotFoundException(`Current user does not exist.`);
+
+    if (!userProfile) {
+      throw new NotFoundException(`User does not exist.`);
     }
-    return instanceToPlain(userData) as User;
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.update(User, userId, { ...updateUserDto });
+
+      await queryRunner.commitTransaction();
+      return { message: 'User profile has been successfully updated.' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw new InternalServerErrorException(
+        'An error occurred when updating the user.',
+      );
+    } finally {
+      await queryRunner.release();
+    }
   }
 }
