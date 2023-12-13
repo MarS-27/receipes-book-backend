@@ -1,19 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsString()
   userName: string;
 
-  @ApiProperty({
-    description:
-      'File path on Cloudinary, got as result after uploud image on Cloudinary.',
-    example: 'recipe-images/peatzskzjs6cyezperkx',
-  })
+  @ApiPropertyOptional({ type: 'string', format: 'binary' })
   @IsOptional()
-  img: string;
+  file: Express.Multer.File;
 }

@@ -11,6 +11,7 @@ import { UserModule } from 'src/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     JwtStrategy,
     LocalStrategy,
     UserService,
+    CloudinaryService,
   ],
 })
 export class AuthModule {}

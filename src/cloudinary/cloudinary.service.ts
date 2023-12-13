@@ -1,6 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
-import { TMessage } from 'src/types/global-types';
+import {
+  UploadApiResponse,
+  DeleteApiResponse,
+  v2 as cloudinary,
+} from 'cloudinary';
 
 @Injectable()
 export class CloudinaryService {
@@ -13,30 +16,15 @@ export class CloudinaryService {
   }
 
   async uploadImages(
-    filesBuffer: Buffer[],
+    fileBuffer: Buffer,
     fileFolder: 'user-images' | 'recipe-images',
   ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: fileFolder },
-        (err, callResult) => {
+      cloudinary.uploader
+        .upload_stream({ folder: fileFolder }, (err, callResult) => {
           err ? reject(err) : resolve(callResult);
-        },
-      );
-
-      filesBuffer.forEach((fileBuffer) => {
-        uploadStream.write(fileBuffer);
-      });
-
-      uploadStream.end();
-    });
-  }
-
-  async deleteImage(publicId: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.destroy(publicId, (err, callResult) => {
-        err ? reject(err) : resolve(callResult);
-      });
+        })
+        .end(fileBuffer);
     });
   }
 

@@ -28,7 +28,7 @@ export class User extends Base {
     example: 'user-images/wdndt6e93sp6dtncoksc',
   })
   @Column({ nullable: true })
-  img: string | null;
+  imgPath: string | null;
 
   @ApiProperty()
   @OneToMany(() => Recipe, (recipe) => recipe.user)

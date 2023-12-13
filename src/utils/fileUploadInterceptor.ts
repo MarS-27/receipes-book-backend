@@ -1,7 +1,7 @@
 import { ConflictException } from '@nestjs/common';
-import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
-export const fileUploadInterceptor = AnyFilesInterceptor({
+export const fileUploadInterceptor = FileInterceptor('file', {
   fileFilter: (req, file, callback) => {
     const allowedMimeTypes = [
       'image/png',

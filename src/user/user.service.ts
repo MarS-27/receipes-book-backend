@@ -12,6 +12,7 @@ import { TMessage, TToken } from 'src/types/global-types';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,7 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
     private dataSource: DataSource,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findOne(email: string): Promise<User | undefined> {
@@ -62,6 +64,7 @@ export class UserService {
   async updateUserData(
     userId: number,
     updateUserDto: UpdateUserDto,
+    file: Express.Multer.File,
   ): Promise<TMessage> {
     const queryRunner = this.dataSource.createQueryRunner();
 
@@ -76,13 +79,37 @@ export class UserService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
+    let newImagePath = '';
+
     try {
-      await queryRunner.manager.update(User, userId, { ...updateUserDto });
+      if (file) {
+        const uploadRes = await this.cloudinaryService.uploadImages(
+          file.buffer,
+          'user-images',
+        );
+
+        newImagePath = uploadRes.public_id;
+
+        await queryRunner.manager.update(User, userId, {
+          imgPath: newImagePath,
+          ...updateUserDto,
+        });
+
+        if (userProfile.imgPath) {
+          await this.cloudinaryService.deleteImages([userProfile.imgPath]);
+        }
+      } else {
+        await queryRunner.manager.update(User, userId, { ...updateUserDto });
+      }
 
       await queryRunner.commitTransaction();
       return { message: 'User profile has been successfully updated.' };
     } catch (err) {
       await queryRunner.rollbackTransaction();
+
+      if (file) {
+        await this.cloudinaryService.deleteImages([newImagePath]);
+      }
 
       throw new InternalServerErrorException(
         'An error occurred when updating the user.',

@@ -1,14 +1,16 @@
 import {
   Body,
-  ConflictException,
   Controller,
   Delete,
   Put,
   Request,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -21,6 +23,7 @@ import { TMessage } from '../types/global-types';
 import { UserService } from './user.service';
 import { SessionRequest } from 'src/types/global-types';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { fileUploadInterceptor } from 'src/utils/fileUploadInterceptor';
 
 @ApiTags('User Endpoints')
 @Controller('user')
@@ -29,6 +32,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Update User Profile' })
   @ApiBearerAuth('Token')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(fileUploadInterceptor)
   @ApiOkResponse({ description: 'User profile has been updated.' })
   @ApiNotFoundResponse({ description: 'User is not found.' })
   @ApiInternalServerErrorResponse({
@@ -42,8 +47,10 @@ export class UserController {
   updateUserData(
     @Request() req: SessionRequest,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<TMessage> {
-    return this.userService.updateUserData(req.user.id, updateUserDto);
+    @UploadedFile()
+    file: Express.Multer.File,
+  ) {
+    return this.userService.updateUserData(req.user.id, updateUserDto, file);
   }
 
   @ApiOperation({ summary: 'Delete User Profile' })

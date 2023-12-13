@@ -40,14 +40,14 @@ export class RecipeService {
     await queryRunner.startTransaction();
 
     try {
-      await queryRunner.manager.save(Recipe, {
-        title: createRecipeDto.title,
-        titleImg: createRecipeDto.titleImg,
-        description: createRecipeDto.description,
-        ingredients: createRecipeDto.ingredients,
-        stages: createRecipeDto.stages,
-        user,
-      });
+      // await queryRunner.manager.save(Recipe, {
+      //   title: createRecipeDto.title,
+      //   titleImg: createRecipeDto.titleImg,
+      //   description: createRecipeDto.description,
+      //   ingredients: createRecipeDto.ingredients,
+      //   stages: createRecipeDto.stages,
+      //   user,
+      // });
 
       await queryRunner.commitTransaction();
       return { message: 'Recipe has been succesfully created' };

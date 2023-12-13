@@ -22,7 +22,7 @@ export type SessionRequest = Express.Request & { user: TTUserRequest };
 
 export class RecipeStage {
   @ApiProperty({ nullable: false, example: 1 })
-  stageNumber: number;
+  stageNumber: string;
 
   @ApiProperty({
     description:
