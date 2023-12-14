@@ -11,25 +11,30 @@ export class Recipe extends Base {
   title: string;
 
   @ApiProperty({
-    description:
-      'File path on Cloudinary, got as result after uploud image on Cloudinary.',
+    description: 'File path on Cloudinary or null.',
     example: 'recipe-images/peatzskzjs6cyezperkx',
   })
-  @Column({ nullable: false })
-  titleImg: string;
+  @Column({ nullable: true })
+  titleImgPath: string | null;
 
   @ApiProperty({ description: 'Recipe short description' })
-  @Column()
+  @Column({ nullable: false })
   description: string;
 
   @ApiProperty({
     description: 'List of ingredients',
     example: ['4 cups water', '1 large onion', '3 tablespoons vegetable oil'],
+    type: 'string',
+    isArray: true,
   })
   @Column('jsonb', { nullable: false })
   ingredients: string[];
 
-  @ApiProperty({ description: 'List of recipe stages', type: RecipeStage })
+  @ApiProperty({
+    description: 'List of recipe stages',
+    type: RecipeStage,
+    isArray: true,
+  })
   @Column('jsonb', { nullable: false })
   stages: RecipeStage[];
 

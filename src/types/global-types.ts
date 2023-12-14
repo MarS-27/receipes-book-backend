@@ -21,19 +21,17 @@ export type TLogin = TTUserRequest & TToken;
 export type SessionRequest = Express.Request & { user: TTUserRequest };
 
 export class RecipeStage {
-  @ApiProperty({ nullable: false, example: 1 })
+  @ApiProperty({ example: 1 })
   stageNumber: string;
 
   @ApiProperty({
     description:
-      'File path on Cloudinary, got as result after uploud image on Cloudinary.',
+      'File path on Cloudinary or null / File originalname or null when fetched on client',
     example: 'recipe-images/peatzskzjs6cyezperkx',
-    nullable: true,
   })
-  img: string | null;
+  imgPath: string | null;
 
   @ApiProperty({
-    nullable: false,
     example:
       'Heat oil in a large pot over medium-high heat; add beef and cook until well browned.',
   })

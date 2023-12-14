@@ -23,7 +23,7 @@ import { TMessage } from '../types/global-types';
 import { UserService } from './user.service';
 import { SessionRequest } from 'src/types/global-types';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { fileUploadInterceptor } from 'src/utils/fileUploadInterceptor';
+import { fileUploadInterceptor } from 'src/utils/uploadInterceptors';
 
 @ApiTags('User Endpoints')
 @Controller('user')

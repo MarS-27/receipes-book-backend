@@ -23,40 +23,44 @@ export class RecipeService {
   ) {}
 
   async createRecipe(
-    userId: number,
+    // userId: number,
     createRecipeDto: CreateRecipeDto,
+    files: Express.Multer.File[],
   ): Promise<TMessage> {
-    const queryRunner = this.dataSource.createQueryRunner();
+    console.log(createRecipeDto);
+    console.log(files);
 
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
+    // const queryRunner = this.dataSource.createQueryRunner();
 
-    if (!user) {
-      throw new NotFoundException(`User does not exist.`);
-    }
+    // const user = await this.userRepository.findOne({
+    //   where: { id: userId },
+    // });
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    // if (!user) {
+    //   throw new NotFoundException(`User does not exist.`);
+    // }
 
-    try {
-      // await queryRunner.manager.save(Recipe, {
-      //   title: createRecipeDto.title,
-      //   titleImg: createRecipeDto.titleImg,
-      //   description: createRecipeDto.description,
-      //   ingredients: createRecipeDto.ingredients,
-      //   stages: createRecipeDto.stages,
-      //   user,
-      // });
+    // await queryRunner.connect();
+    // await queryRunner.startTransaction();
 
-      await queryRunner.commitTransaction();
-      return { message: 'Recipe has been succesfully created' };
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
+    // try {
+    // await queryRunner.manager.save(Recipe, {
+    //   title: createRecipeDto.title,
+    //   titleImg: createRecipeDto.titleImg,
+    //   description: createRecipeDto.description,
+    //   ingredients: createRecipeDto.ingredients,
+    //   stages: createRecipeDto.stages,
+    //   user,
+    // });
 
-      throw new ConflictException('Error when creating new recipe');
-    } finally {
-      await queryRunner.release();
-    }
+    // await queryRunner.commitTransaction();
+    return { message: 'Recipe has been succesfully created' };
+    // } catch (err) {
+    //   await queryRunner.rollbackTransaction();
+
+    //   throw new ConflictException('Error when creating new recipe');
+    // } finally {
+    //   await queryRunner.release();
+    // }
   }
 }
