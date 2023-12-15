@@ -1,16 +1,15 @@
 import {
   ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { TMessage } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
-import { Recipe } from './entities/recipe.entity';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
-import { TMessage } from 'src/types/global-types';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Recipe } from './entities/recipe.entity';
 
 @Injectable()
 export class RecipeService {
@@ -23,44 +22,82 @@ export class RecipeService {
   ) {}
 
   async createRecipe(
-    // userId: number,
+    userId: number,
     createRecipeDto: CreateRecipeDto,
     files: Express.Multer.File[],
   ): Promise<TMessage> {
-    console.log(createRecipeDto);
-    console.log(files);
+    const queryRunner = this.dataSource.createQueryRunner();
 
-    // const queryRunner = this.dataSource.createQueryRunner();
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
 
-    // const user = await this.userRepository.findOne({
-    //   where: { id: userId },
-    // });
+    if (!user) {
+      throw new NotFoundException(`User does not exist.`);
+    }
 
-    // if (!user) {
-    //   throw new NotFoundException(`User does not exist.`);
-    // }
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // await queryRunner.connect();
-    // await queryRunner.startTransaction();
+    let newImagesPath = [];
 
-    // try {
-    // await queryRunner.manager.save(Recipe, {
-    //   title: createRecipeDto.title,
-    //   titleImg: createRecipeDto.titleImg,
-    //   description: createRecipeDto.description,
-    //   ingredients: createRecipeDto.ingredients,
-    //   stages: createRecipeDto.stages,
-    //   user,
-    // });
+    try {
+      if (files.length) {
+        const uploadRes = await Promise.all(
+          files.map((file) =>
+            this.cloudinaryService.uploadImages(file.buffer, 'recipe-images'),
+          ),
+        );
 
-    // await queryRunner.commitTransaction();
-    return { message: 'Recipe has been succesfully created' };
-    // } catch (err) {
-    //   await queryRunner.rollbackTransaction();
+        let imgCount = 0;
+        let titleImgPath = createRecipeDto.titleImgPath;
+        newImagesPath = uploadRes.map((img) => img.public_id);
 
-    //   throw new ConflictException('Error when creating new recipe');
-    // } finally {
-    //   await queryRunner.release();
-    // }
+        if (createRecipeDto.titleImgPath) {
+          titleImgPath = uploadRes[imgCount].public_id;
+          imgCount++;
+        }
+
+        const stages = createRecipeDto.stages.map((stage) => {
+          if (stage.imgPath) {
+            stage.imgPath = uploadRes[imgCount].public_id;
+            imgCount++;
+          }
+
+          return stage;
+        });
+
+        await queryRunner.manager.save(Recipe, {
+          title: createRecipeDto.title,
+          titleImgPath,
+          description: createRecipeDto.description,
+          ingredients: createRecipeDto.ingredients,
+          stages,
+          user,
+        });
+      } else {
+        await queryRunner.manager.save(Recipe, {
+          title: createRecipeDto.title,
+          titleImgPath: createRecipeDto.titleImgPath,
+          description: createRecipeDto.description,
+          ingredients: createRecipeDto.ingredients,
+          stages: createRecipeDto.stages,
+          user,
+        });
+      }
+
+      await queryRunner.commitTransaction();
+      return { message: 'Recipe has been succesfully created' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      if (files.length) {
+        await this.cloudinaryService.deleteImages(newImagesPath);
+      }
+
+      throw new ConflictException('Error when creating new recipe');
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

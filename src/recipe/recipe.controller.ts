@@ -31,7 +31,7 @@ export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
 
   @ApiOperation({ summary: 'Create new recipe' })
-  // @ApiBearerAuth('Token')
+  @ApiBearerAuth('Token')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(filesUploadInterceptor, BodyParseInterceptor)
   @ApiCreatedResponse({ description: 'Recipe has been succesfully created' })
@@ -40,7 +40,7 @@ export class RecipeController {
     description: 'User does not have valid Token. User Unauthorized.',
   })
   @Post('create')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
   async createTask(
     @Request() req: SessionRequest,
@@ -49,6 +49,6 @@ export class RecipeController {
     @UploadedFiles()
     files: Express.Multer.File[],
   ): Promise<TMessage> {
-    return this.recipeService.createRecipe(createRecipeDto, files);
+    return this.recipeService.createRecipe(req.user.id, createRecipeDto, files);
   }
 }

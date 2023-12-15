@@ -14,7 +14,7 @@ export class Recipe extends Base {
     description: 'File path on Cloudinary or null.',
     example: 'recipe-images/peatzskzjs6cyezperkx',
   })
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: null })
   titleImgPath: string | null;
 
   @ApiProperty({ description: 'Recipe short description' })

@@ -1,5 +1,4 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsString } from 'class-validator';
 import { RecipeStage } from 'src/types/global-types';
 
@@ -33,12 +32,12 @@ export class CreateRecipeDto {
     example: `[
       {
         "stageNumber": "1",
-        "imgPath": "recipe-images/peatzskzjs6cyezperkx",
+        "imgPath": null,
         "description": "Heat oil in a large pot over medium-high heat; add beef and cook until well browned."
       },
       {
-        "stageNumber": "1",
-        "imgPath": "recipe-images/peatzskzjs6cyezperkx",
+        "stageNumber": "2",
+        "imgPath": "image.jpg",
         "description": "Heat oil in a large pot over medium-high heat; add beef and cook until well browned."
       }
     ]`,
