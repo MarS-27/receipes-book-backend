@@ -122,7 +122,10 @@ export class UserService {
   async deleteUserProfile(userId: number): Promise<TMessage> {
     const queryRunner = this.dataSource.createQueryRunner();
 
-    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['recipes'],
+    });
 
     if (!user) {
       throw new NotFoundException(`User does not exist.`);
@@ -130,10 +133,25 @@ export class UserService {
 
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    console.log(user.recipes);
 
     try {
+      const allImgPaths = user.imgPath ? [user.imgPath] : [];
+
+      user.recipes.forEach((recipe) => {
+        if (recipe.titleImgPath) {
+          allImgPaths.push(recipe.titleImgPath);
+        }
+
+        recipe.stages.forEach((stage) => {
+          if (stage.imgPath) {
+            allImgPaths.push(stage.imgPath);
+          }
+        });
+      });
+
       await queryRunner.manager.delete(User, userId);
+
+      await this.cloudinaryService.deleteImages(allImgPaths);
 
       await queryRunner.commitTransaction();
       return { message: 'User has been deleted' };
