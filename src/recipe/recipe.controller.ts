@@ -47,6 +47,9 @@ export class RecipeController {
     type: PaginatedResult<Recipe>,
   })
   @ApiNotFoundResponse({ description: 'User or Recipes not found.' })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occured when getting recipes.',
+  })
   @ApiUnauthorizedResponse({
     description: 'User does not have valid Token. User Unauthorized.',
   })

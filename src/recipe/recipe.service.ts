@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PaginatedResult, TMessage } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, ErrorDescription, Repository } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { Recipe } from './entities/recipe.entity';
 
@@ -121,23 +121,29 @@ export class RecipeService {
     limit: number,
     skip: number,
   ): Promise<PaginatedResult<Recipe>> {
-    const whereClause = { user: { id: userId } };
+    try {
+      const whereClause = { user: { id: userId } };
 
-    const total = await this.recipeRepository.count({
-      where: whereClause,
-    });
+      const total = await this.recipeRepository.count({
+        where: whereClause,
+      });
 
-    const results = await this.recipeRepository.find({
-      skip,
-      take: limit,
-      where: whereClause,
-    });
+      const results = await this.recipeRepository.find({
+        skip,
+        take: limit,
+        where: whereClause,
+      });
 
-    return {
-      total,
-      skip,
-      limit,
-      results,
-    };
+      return {
+        total,
+        skip,
+        limit,
+        results,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error when getting recipes: ${error?.message}`,
+      );
+    }
   }
 }
