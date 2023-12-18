@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger/dist';
-import { User } from 'src/user/entities/user.entity';
 
 export type TToken = {
   token: string;
@@ -9,16 +8,16 @@ export type TMessage = {
   message: string;
 };
 
-export type TTUserRequest = {
+export type TUserRequest = {
   id: number;
   email: string;
   img: string;
   userName: string;
 };
 
-export type TLogin = TTUserRequest & TToken;
+export type TLogin = TUserRequest & TToken;
 
-export type SessionRequest = Express.Request & { user: TTUserRequest };
+export type SessionRequest = Express.Request & { user: TUserRequest };
 
 export class RecipeStage {
   @ApiProperty({ example: 1 })
@@ -36,4 +35,18 @@ export class RecipeStage {
       'Heat oil in a large pot over medium-high heat; add beef and cook until well browned.',
   })
   description: string;
+}
+
+export class PaginatedResult<TData> {
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  limit: number;
+
+  @ApiProperty()
+  skip: number;
+
+  @ApiProperty({ type: () => [Object] })
+  results: TData[];
 }

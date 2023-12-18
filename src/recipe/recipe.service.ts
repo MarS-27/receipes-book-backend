@@ -1,11 +1,12 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { TMessage } from 'src/types/global-types';
+import { PaginatedResult, TMessage } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
@@ -87,7 +88,7 @@ export class RecipeService {
       }
 
       await queryRunner.commitTransaction();
-      return { message: 'Recipe has been succesfully created' };
+      return { message: 'Recipe has been succesfully created.' };
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -95,9 +96,48 @@ export class RecipeService {
         await this.cloudinaryService.deleteImages(newImagesPath);
       }
 
-      throw new ConflictException('Error when creating new recipe');
+      throw new InternalServerErrorException('Error when creating new recipe.');
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async getRecipeById(userId: number, recipeId: number): Promise<Recipe> {
+    const whereClause = { user: { id: userId }, id: recipeId };
+
+    const recipe = await this.recipeRepository.findOne({
+      where: whereClause,
+    });
+
+    if (!recipe) {
+      throw new NotFoundException(`Recipe not found.`);
+    }
+
+    return recipe;
+  }
+
+  async getPaginatedRecipes(
+    userId: number,
+    limit: number,
+    skip: number,
+  ): Promise<PaginatedResult<Recipe>> {
+    const whereClause = { user: { id: userId } };
+
+    const total = await this.recipeRepository.count({
+      where: whereClause,
+    });
+
+    const results = await this.recipeRepository.find({
+      skip,
+      take: limit,
+      where: whereClause,
+    });
+
+    return {
+      total,
+      skip,
+      limit,
+      results,
+    };
   }
 }

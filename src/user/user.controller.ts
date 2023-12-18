@@ -30,7 +30,7 @@ import { fileUploadInterceptor } from 'src/utils/uploadInterceptors';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOperation({ summary: 'Update User Profile' })
+  @ApiOperation({ summary: 'Update User Profile.' })
   @ApiBearerAuth('Token')
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(fileUploadInterceptor)
@@ -53,7 +53,7 @@ export class UserController {
     return this.userService.updateUserData(req.user.id, updateUserDto, file);
   }
 
-  @ApiOperation({ summary: 'Delete User Profile' })
+  @ApiOperation({ summary: 'Delete User Profile.' })
   @ApiOkResponse({
     description: 'User has been successfully deleted.',
   })
@@ -65,7 +65,7 @@ export class UserController {
   @ApiUnauthorizedResponse({
     description: 'User does not have Token. User Unauthorized.',
   })
-  @Delete('delete-user')
+  @Delete('delete')
   @UseGuards(JwtAuthGuard)
   deleteUser(@Request() req: SessionRequest): Promise<TMessage> {
     return this.userService.deleteUserProfile(req.user.id);

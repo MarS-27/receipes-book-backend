@@ -35,7 +35,7 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
-  @ApiOperation({ summary: 'Registration' })
+  @ApiOperation({ summary: 'Registration.' })
   @ApiCreatedResponse({
     description: 'User has been successfully created.',
   })
@@ -49,7 +49,7 @@ export class AuthController {
     return this.userService.userRegistration(registerUserDto);
   }
 
-  @ApiOperation({ summary: 'User Login' })
+  @ApiOperation({ summary: 'User Login.' })
   @ApiUnauthorizedResponse({ description: 'Incorrect Email or Password.' })
   @ApiNotFoundResponse({ description: 'User not found' })
   @Post('login')
@@ -61,7 +61,7 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @ApiOperation({ description: 'Get User Profile' })
+  @ApiOperation({ description: 'Get User Profile.' })
   @ApiBearerAuth('Token')
   @ApiOkResponse({
     description: 'Profile has been successfully got.',

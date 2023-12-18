@@ -154,7 +154,7 @@ export class UserService {
       await this.cloudinaryService.deleteImages(allImgPaths);
 
       await queryRunner.commitTransaction();
-      return { message: 'User has been deleted' };
+      return { message: 'User has been deleted.' };
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
