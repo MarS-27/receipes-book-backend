@@ -112,7 +112,7 @@ export class UserService {
       }
 
       throw new InternalServerErrorException(
-        'An error occurred when updating the user.',
+        'An error occurred when updating user.',
       );
     } finally {
       await queryRunner.release();
@@ -151,7 +151,9 @@ export class UserService {
 
       await queryRunner.manager.delete(User, userId);
 
-      await this.cloudinaryService.deleteImages(allImgPaths);
+      if (allImgPaths.length) {
+        await this.cloudinaryService.deleteImages(allImgPaths);
+      }
 
       await queryRunner.commitTransaction();
       return { message: 'User has been deleted.' };
@@ -159,7 +161,7 @@ export class UserService {
       await queryRunner.rollbackTransaction();
 
       throw new InternalServerErrorException(
-        'An error occurred when deleting the user.',
+        'An error occurred when deleting user.',
       );
     } finally {
       await queryRunner.release();

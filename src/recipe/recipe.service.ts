@@ -146,4 +146,45 @@ export class RecipeService {
       );
     }
   }
+
+  async deleteRecipe(userId: number, recipeId: number): Promise<TMessage> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    const whereClause = { user: { id: userId }, id: recipeId };
+    const recipe = await this.recipeRepository.findOne({ where: whereClause });
+
+    if (!recipe) {
+      throw new NotFoundException('Recipe not found.');
+    }
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const allImgPaths = recipe.titleImgPath ? [recipe.titleImgPath] : [];
+
+      recipe.stages.forEach((stage) => {
+        if (stage.imgPath) {
+          allImgPaths.push(stage.imgPath);
+        }
+      });
+
+      await queryRunner.manager.delete(Recipe, recipeId);
+
+      if (allImgPaths.length) {
+        await this.cloudinaryService.deleteImages(allImgPaths);
+      }
+
+      await queryRunner.commitTransaction();
+      return { message: 'Product has been deleted' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      throw new InternalServerErrorException(
+        'An error occurred when deleting recipe.',
+      );
+    } finally {
+      await queryRunner.release();
+    }
+  }
 }

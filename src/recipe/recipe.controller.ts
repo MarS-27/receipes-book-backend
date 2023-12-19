@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -102,5 +103,24 @@ export class RecipeController {
     files: Express.Multer.File[],
   ): Promise<TMessage> {
     return this.recipeService.createRecipe(req.user.id, createRecipeDto, files);
+  }
+
+  @ApiOperation({ summary: 'Delete recipe by id.' })
+  @ApiBearerAuth('Token')
+  @ApiOkResponse({ description: 'Recipe has been deleted' })
+  @ApiUnauthorizedResponse({
+    description: 'User does not have valid Token. User Unauthorized.',
+  })
+  @ApiNotFoundResponse({ description: 'Recipe not found.' })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occurred when deleting recipe.',
+  })
+  @Delete('delete/:recipeId')
+  @UseGuards(JwtAuthGuard)
+  deleteRecipe(
+    @Request() req: SessionRequest,
+    @Param('recipeId') recipeId: number,
+  ): Promise<TMessage> {
+    return this.recipeService.deleteRecipe(req.user.id, recipeId);
   }
 }
