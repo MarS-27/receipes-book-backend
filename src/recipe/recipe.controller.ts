@@ -5,6 +5,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   Request,
   UploadedFiles,
@@ -35,6 +36,7 @@ import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { filesUploadInterceptor } from 'src/utils/uploadInterceptors';
 import { BodyParseInterceptor } from 'src/utils/parseFormDataInterceptor';
 import { Recipe } from './entities/recipe.entity';
+import { UpdateRecipeDto } from './dto/update-recipe.dto';
 
 @ApiTags('Recipe Endpoints')
 @Controller('recipe')
@@ -103,6 +105,35 @@ export class RecipeController {
     files: Express.Multer.File[],
   ): Promise<TMessage> {
     return this.recipeService.createRecipe(req.user.id, createRecipeDto, files);
+  }
+
+  @ApiOperation({ summary: 'Update Recipe.' })
+  @ApiBearerAuth('Token')
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(filesUploadInterceptor, BodyParseInterceptor)
+  @ApiOkResponse({ description: 'Recipe has been updated.' })
+  @ApiNotFoundResponse({ description: 'Recipe not found.' })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occured when updating recipe.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not have Token. User Unauthorized.',
+  })
+  @Put('update/:recipeId')
+  @UseGuards(JwtAuthGuard)
+  updateRecipeData(
+    @Request() req: SessionRequest,
+    @Param('recipeId') recipeId: number,
+    @Body() updateRecipeDto: UpdateRecipeDto,
+    @UploadedFiles()
+    files: Express.Multer.File[],
+  ): Promise<TMessage> {
+    return this.recipeService.updateRecipeData(
+      req.user.id,
+      recipeId,
+      updateRecipeDto,
+      files,
+    );
   }
 
   @ApiOperation({ summary: 'Delete recipe by id.' })

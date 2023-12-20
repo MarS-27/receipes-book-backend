@@ -99,7 +99,7 @@ export class UserService {
           await this.cloudinaryService.deleteImages([userProfile.imgPath]);
         }
       } else {
-        await queryRunner.manager.update(User, userId, { ...updateUserDto });
+        await queryRunner.manager.update(User, userId, updateUserDto);
       }
 
       await queryRunner.commitTransaction();

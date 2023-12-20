@@ -11,6 +11,7 @@ import { User } from 'src/user/entities/user.entity';
 import { DataSource, ErrorDescription, Repository } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { Recipe } from './entities/recipe.entity';
+import { UpdateRecipeDto } from './dto/update-recipe.dto';
 
 @Injectable()
 export class RecipeService {
@@ -144,6 +145,128 @@ export class RecipeService {
       throw new InternalServerErrorException(
         `Error when getting recipes: ${error?.message}`,
       );
+    }
+  }
+
+  async updateRecipeData(
+    userId: number,
+    recipeId: number,
+    updateRecipeDto: UpdateRecipeDto,
+    files: Express.Multer.File[],
+  ): Promise<TMessage> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    let { titleImgPath, stages, ...otherData } = updateRecipeDto;
+
+    const whereClause = { user: { id: userId }, id: recipeId };
+    const recipe = await this.recipeRepository.findOne({ where: whereClause });
+
+    if (!recipe) {
+      throw new NotFoundException('Recipe not found.');
+    }
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    let newImgPaths = [];
+    let oldImgPaths = [];
+
+    try {
+      if (files.length) {
+        const uploadRes = await Promise.all(
+          files.map((file) =>
+            this.cloudinaryService.uploadImages(file.buffer, 'recipe-images'),
+          ),
+        );
+
+        let imgCount = 0;
+
+        newImgPaths = uploadRes.map((img) => img.public_id);
+
+        if (titleImgPath !== recipe.titleImgPath) {
+          if (titleImgPath) {
+            titleImgPath = uploadRes[imgCount].public_id;
+
+            imgCount++;
+          }
+
+          if (recipe.titleImgPath) {
+            oldImgPaths.push(recipe.titleImgPath);
+          }
+        }
+
+        if (stages) {
+          stages.forEach((stage) => {
+            const stageInDb = recipe.stages.find(
+              (oldStage) => oldStage.stageNumber === stage.stageNumber,
+            );
+
+            if (stage.imgPath) {
+              if (stageInDb && stage.imgPath === stageInDb.imgPath) {
+                return;
+              }
+
+              if (stageInDb?.imgPath) {
+                oldImgPaths.push(stageInDb.imgPath);
+              }
+
+              stage.imgPath = uploadRes[imgCount].public_id;
+              imgCount++;
+            }
+          });
+        }
+
+        await queryRunner.manager.update(Recipe, recipeId, {
+          titleImgPath,
+          stages,
+          ...otherData,
+        });
+
+        if (oldImgPaths.length) {
+          await this.cloudinaryService.deleteImages(oldImgPaths);
+        }
+      } else {
+        if (recipe.titleImgPath && !titleImgPath) {
+          oldImgPaths.push(recipe.titleImgPath);
+        }
+
+        if (stages) {
+          stages.forEach((stage) => {
+            const stageInDb = recipe.stages.find(
+              (oldStage) => oldStage.stageNumber === stage.stageNumber,
+            );
+
+            if (!stage.imgPath && stageInDb.imgPath) {
+              oldImgPaths.push(stageInDb.imgPath);
+            }
+          });
+        }
+
+        await queryRunner.manager.update(Recipe, recipeId, {
+          titleImgPath,
+          stages,
+          ...otherData,
+        });
+
+        if (oldImgPaths.length) {
+          await this.cloudinaryService.deleteImages(oldImgPaths);
+        }
+      }
+
+      await queryRunner.commitTransaction();
+      return { message: 'Recipe has been successfully updated.' };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+
+      if (files.length) {
+        await this.cloudinaryService.deleteImages(newImgPaths);
+      }
+
+      throw new InternalServerErrorException(
+        'An error occurred when updating recipe.',
+      );
+    } finally {
+      await queryRunner.release();
     }
   }
 

@@ -49,7 +49,7 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile()
     file: Express.Multer.File,
-  ) {
+  ): Promise<TMessage> {
     return this.userService.updateUserData(req.user.id, updateUserDto, file);
   }
 
