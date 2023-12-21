@@ -66,6 +66,27 @@ export class RecipeController {
     return this.recipeService.getPaginatedRecipes(req.user.id, limit, skip);
   }
 
+  @ApiOperation({ summary: 'Search Recipes by title.' })
+  @ApiBearerAuth('Token')
+  @ApiOkResponse({
+    description: 'Recipes have been successfully searched.',
+  })
+  @ApiNotFoundResponse({ description: 'Recipes not found.' })
+  @ApiUnauthorizedResponse({
+    description: 'User does not have valid Token. User Unauthorized.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'An error occurred when searching recipes.',
+  })
+  @Get('search')
+  @UseGuards(JwtAuthGuard)
+  searchProducts(
+    @Request() req: SessionRequest,
+    @Query('q') query: string,
+  ): Promise<Recipe[]> {
+    return this.recipeService.searchRecipes(req.user.id, query);
+  }
+
   @ApiOperation({ summary: 'Get recipe by id.' })
   @ApiBearerAuth('Token')
   @ApiOkResponse({ description: 'Recipe has been succesfully got.' })

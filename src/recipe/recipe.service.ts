@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PaginatedResult, TMessage } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
-import { DataSource, ErrorDescription, Repository } from 'typeorm';
+import { DataSource, ErrorDescription, ILike, Repository, Raw } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
 import { Recipe } from './entities/recipe.entity';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
@@ -130,9 +130,10 @@ export class RecipeService {
       });
 
       const results = await this.recipeRepository.find({
+        where: whereClause,
+        order: { createdAt: 'DESC' },
         skip,
         take: limit,
-        where: whereClause,
       });
 
       return {
@@ -144,6 +145,23 @@ export class RecipeService {
     } catch (error) {
       throw new InternalServerErrorException(
         `Error when getting recipes: ${error?.message}`,
+      );
+    }
+  }
+
+  async searchRecipes(userId: number, query: string): Promise<Recipe[]> {
+    try {
+      const whereClause = {
+        user: { id: userId },
+        title: ILike(`%${query.trim().replace(/\s+/g, ' ')}%`),
+      };
+
+      const recipes = await this.recipeRepository.find({ where: whereClause });
+
+      return recipes;
+    } catch (error) {
+      throw new InternalServerErrorException(
+        'An error occurred when searching recipes.',
       );
     }
   }
