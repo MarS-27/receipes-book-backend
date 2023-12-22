@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RecipeStage } from 'src/types/global-types';
+import { RecipeCategories, RecipeStage } from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
 import { Base } from 'src/utils/base';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -9,6 +9,13 @@ export class Recipe extends Base {
   @ApiProperty({ description: 'Recipe name' })
   @Column({ nullable: false })
   title: string;
+
+  @ApiProperty({
+    description: 'Recipe category',
+    enum: RecipeCategories,
+  })
+  @Column({ nullable: false })
+  category: RecipeCategories;
 
   @ApiProperty({
     description: 'File path on Cloudinary or null.',

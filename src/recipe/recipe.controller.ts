@@ -22,6 +22,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -29,6 +30,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RecipeService } from 'src/recipe/recipe.service';
 import {
   PaginatedResult,
+  RecipeCategories,
   SessionRequest,
   TMessage,
 } from 'src/types/global-types';
@@ -45,6 +47,7 @@ export class RecipeController {
 
   @ApiOperation({ summary: 'Get paginated recipes.' })
   @ApiBearerAuth('Token')
+  @ApiQuery({ name: 'category', enum: RecipeCategories })
   @ApiOkResponse({
     description: 'Recipes has been succesfully got.',
     type: PaginatedResult<Recipe>,
@@ -60,10 +63,16 @@ export class RecipeController {
   @UseGuards(JwtAuthGuard)
   async getPaginatedRecipes(
     @Request() req: SessionRequest,
+    @Query('category') category: RecipeCategories,
     @Query('limit') limit: number,
     @Query('skip') skip: number,
   ): Promise<PaginatedResult<Recipe>> {
-    return this.recipeService.getPaginatedRecipes(req.user.id, limit, skip);
+    return this.recipeService.getPaginatedRecipes(
+      req.user.id,
+      category,
+      limit,
+      skip,
+    );
   }
 
   @ApiOperation({ summary: 'Search Recipes by title.' })

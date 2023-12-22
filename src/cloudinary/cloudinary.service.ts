@@ -1,9 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-  UploadApiResponse,
-  DeleteApiResponse,
-  v2 as cloudinary,
-} from 'cloudinary';
+import { Injectable } from '@nestjs/common';
+import { UploadApiResponse, v2 as cloudinary } from 'cloudinary';
 
 @Injectable()
 export class CloudinaryService {
@@ -36,5 +32,3 @@ export class CloudinaryService {
     });
   }
 }
-
-// https://res.cloudinary.com/dc6v1ldtx/recipe-images/peatzskzjs6cyezperkx

@@ -1,11 +1,20 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { RecipeStage } from 'src/types/global-types';
+import { RecipeCategories, RecipeStage } from 'src/types/global-types';
 
 export class CreateRecipeDto {
   @ApiProperty({ description: 'Recipe name' })
   @IsString()
   title: string;
+
+  @ApiProperty({
+    description: 'Recipe category',
+    enum: Object.values(RecipeCategories).filter(
+      (value) => value !== RecipeCategories.All,
+    ),
+  })
+  @IsString()
+  category: RecipeCategories;
 
   @ApiPropertyOptional({
     description: 'File originalname or null.',

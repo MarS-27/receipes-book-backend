@@ -1,17 +1,20 @@
 import {
-  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
-import { PaginatedResult, TMessage } from 'src/types/global-types';
+import {
+  PaginatedResult,
+  RecipeCategories,
+  TMessage,
+} from 'src/types/global-types';
 import { User } from 'src/user/entities/user.entity';
-import { DataSource, ErrorDescription, ILike, Repository, Raw } from 'typeorm';
+import { DataSource, ILike, Repository } from 'typeorm';
 import { CreateRecipeDto } from './dto/create-recipe.dto';
-import { Recipe } from './entities/recipe.entity';
 import { UpdateRecipeDto } from './dto/update-recipe.dto';
+import { Recipe } from './entities/recipe.entity';
 
 @Injectable()
 export class RecipeService {
@@ -71,6 +74,7 @@ export class RecipeService {
 
         await queryRunner.manager.save(Recipe, {
           title: createRecipeDto.title,
+          category: createRecipeDto.category,
           titleImgPath,
           description: createRecipeDto.description,
           ingredients: createRecipeDto.ingredients,
@@ -80,6 +84,7 @@ export class RecipeService {
       } else {
         await queryRunner.manager.save(Recipe, {
           title: createRecipeDto.title,
+          category: createRecipeDto.category,
           titleImgPath: createRecipeDto.titleImgPath,
           description: createRecipeDto.description,
           ingredients: createRecipeDto.ingredients,
@@ -119,11 +124,15 @@ export class RecipeService {
 
   async getPaginatedRecipes(
     userId: number,
+    category: RecipeCategories,
     limit: number,
     skip: number,
   ): Promise<PaginatedResult<Recipe>> {
     try {
-      const whereClause = { user: { id: userId } };
+      const whereClause =
+        category !== RecipeCategories.All
+          ? { user: { id: userId }, category }
+          : { user: { id: userId } };
 
       const total = await this.recipeRepository.count({
         where: whereClause,

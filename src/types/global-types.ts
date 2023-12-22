@@ -50,3 +50,12 @@ export class PaginatedResult<TData> {
   @ApiProperty({ type: () => [Object] })
   results: TData[];
 }
+
+export enum RecipeCategories {
+  All = 'Всі',
+  Deserts = 'Десерти',
+  Salads = 'Салати',
+  Soups = 'Супи',
+  Appetizer = 'Закуски',
+  Others = 'Інші',
+}
