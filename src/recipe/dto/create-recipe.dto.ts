@@ -55,6 +55,8 @@ export class CreateRecipeDto {
   stages: RecipeStage[];
 
   @ApiPropertyOptional({
+    description:
+      'List of recipe images. Each image corresponds to a position in the recipe. If no images are added, please check "Send empty value"',
     type: 'array',
     items: { type: 'string', format: 'binary' },
   })

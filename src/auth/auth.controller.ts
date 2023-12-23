@@ -61,7 +61,7 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
-  @ApiOperation({ description: 'Get User Profile.' })
+  @ApiOperation({ summary: 'Get User Profile.' })
   @ApiBearerAuth('Token')
   @ApiOkResponse({
     description: 'Profile has been successfully got.',
