@@ -29,16 +29,16 @@ export class AuthService {
   }
 
   async login(user: TUserRequest): Promise<TLogin> {
-    const { id, email, img, userName } = user;
+    const { id, email, imgPath, userName } = user;
     return {
       id,
       email,
-      img,
+      imgPath,
       userName,
       token: this.jwtService.sign({
         id,
         email,
-        img,
+        imgPath,
         userName,
       }),
     };

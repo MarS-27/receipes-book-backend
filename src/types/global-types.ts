@@ -11,7 +11,7 @@ export type TMessage = {
 export type TUserRequest = {
   id: number;
   email: string;
-  img: string;
+  imgPath: string;
   userName: string;
 };
 
@@ -52,10 +52,10 @@ export class PaginatedResult<TData> {
 }
 
 export enum RecipeCategories {
-  All = 'Всі',
-  Deserts = 'Десерти',
-  Salads = 'Салати',
-  Soups = 'Супи',
-  Appetizer = 'Закуски',
-  Others = 'Інші',
+  All = 'All',
+  Deserts = 'Deserts',
+  Salads = 'Salads',
+  Soups = 'Soups',
+  Appetizer = 'Appetizer',
+  Others = 'Others',
 }
