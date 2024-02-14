@@ -222,7 +222,7 @@ export class RecipeService {
           }
         }
 
-        if (stages) {
+        if (stages.length) {
           stages.forEach((stage) => {
             const stageInDb = recipe.stages.find(
               (oldStage) => oldStage.stageNumber === stage.stageNumber,
@@ -257,13 +257,13 @@ export class RecipeService {
           oldImgPaths.push(recipe.titleImgPath);
         }
 
-        if (stages) {
+        if (stages.length) {
           stages.forEach((stage) => {
             const stageInDb = recipe.stages.find(
               (oldStage) => oldStage.stageNumber === stage.stageNumber,
             );
 
-            if (!stage.imgPath && stageInDb.imgPath) {
+            if (!stage.imgPath && stageInDb?.imgPath) {
               oldImgPaths.push(stageInDb.imgPath);
             }
           });
