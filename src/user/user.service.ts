@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from 'src/auth/dto/registration-user.dto';
-import { TMessage, TToken } from 'src/types/global-types';
+import { TMessage, TToken, TUserRequest } from 'src/types/global-types';
 import { DataSource, Repository } from 'typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -29,6 +29,20 @@ export class UserService {
         email,
       },
     });
+  }
+
+  async getUserProfile(id: number): Promise<TUserRequest> {
+    const userProfile = await this.userRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!userProfile) {
+      throw new NotFoundException(`User profile not found.`);
+    }
+
+    return userProfile;
   }
 
   async userRegistration(registerUserDto: RegisterUserDto): Promise<TToken> {

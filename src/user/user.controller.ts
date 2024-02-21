@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Put,
   Request,
   UploadedFile,
@@ -19,7 +20,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { TMessage } from '../types/global-types';
+import { TMessage, TUserRequest } from '../types/global-types';
 import { UserService } from './user.service';
 import { SessionRequest } from 'src/types/global-types';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -29,6 +30,20 @@ import { fileUploadInterceptor } from 'src/utils/uploadInterceptors';
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiOperation({ summary: 'Get User Profile.' })
+  @ApiBearerAuth('Token')
+  @ApiOkResponse({
+    description: 'Profile has been successfully got.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Need User Token for Getting User Profile',
+  })
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Request() req: SessionRequest): Promise<TUserRequest> {
+    return this.userService.getUserProfile(req.user.id);
+  }
 
   @ApiOperation({ summary: 'Update User Profile.' })
   @ApiBearerAuth('Token')

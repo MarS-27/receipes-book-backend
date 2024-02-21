@@ -65,18 +65,4 @@ export class AuthController {
   ): Promise<TLogin> {
     return this.authService.login(req.user);
   }
-
-  @ApiOperation({ summary: 'Get User Profile.' })
-  @ApiBearerAuth('Token')
-  @ApiOkResponse({
-    description: 'Profile has been successfully got.',
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Need User Token for Getting User Profile',
-  })
-  @Get('profile')
-  @UseGuards(JwtAuthGuard)
-  getProfile(@Request() req: SessionRequest): TUserRequest {
-    return req.user;
-  }
 }
