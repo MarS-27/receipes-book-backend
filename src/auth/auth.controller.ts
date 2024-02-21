@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   Post,
   Request,
   UseGuards,
@@ -10,27 +9,19 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiCreatedResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import type {
-  SessionRequest,
-  TLogin,
-  TToken,
-  TUserRequest,
-} from 'src/types/global-types';
+import type { SessionRequest, TLogin, TToken } from 'src/types/global-types';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import { RegisterUserDto } from './dto/registration-user.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/registration-user.dto';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ApiTags('User Authorization')
 @Controller('auth')
