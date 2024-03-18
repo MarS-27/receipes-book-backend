@@ -53,9 +53,19 @@ export class PaginatedResult<TData> {
 
 export enum RecipeCategories {
   All = 'All',
-  Deserts = 'Deserts',
   Salads = 'Salads',
   Soups = 'Soups',
   Appetizer = 'Appetizer',
+  MainCourse = 'Main course',
+  SideDishes = 'Side dishes',
+  Beverages = 'Beverages',
+  Breakfast = 'Breakfast',
+  VeganHealthy = 'Vegan/Healthy',
+  Cakes = 'Cakes',
+  Cookies = 'Cookies',
+  PiesAndTarts = 'Pies and tarts',
+  Baking = 'Baking',
+  Cupcakes = 'Cupcakes',
+  OtherDeserts = 'Other deserts',
   Others = 'Others',
 }
