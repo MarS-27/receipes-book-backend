@@ -48,6 +48,7 @@ export class RecipeController {
   @ApiOperation({ summary: 'Get paginated recipes.' })
   @ApiBearerAuth('Token')
   @ApiQuery({ name: 'category', enum: RecipeCategories })
+  @ApiQuery({ name: 'isVeganHealthy', type: Boolean, required: false })
   @ApiOkResponse({
     description: 'Recipes has been succesfully got.',
     type: PaginatedResult<Recipe>,
@@ -64,6 +65,7 @@ export class RecipeController {
   async getPaginatedRecipes(
     @Request() req: SessionRequest,
     @Query('category') category: RecipeCategories,
+    @Query('isVeganHealthy') isVeganHealthy: boolean,
     @Query('limit') limit: number,
     @Query('skip') skip: number,
   ): Promise<PaginatedResult<Recipe>> {
@@ -72,6 +74,7 @@ export class RecipeController {
       category,
       limit,
       skip,
+      isVeganHealthy,
     );
   }
 

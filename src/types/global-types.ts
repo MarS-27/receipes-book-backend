@@ -60,7 +60,6 @@ export enum RecipeCategories {
   SideDishes = 'Side dishes',
   Beverages = 'Beverages',
   Breakfast = 'Breakfast',
-  VeganHealthy = 'Vegan/Healthy',
   Baking = 'Baking',
   Desserts = 'Desserts',
   Others = 'Others',

@@ -18,7 +18,11 @@ export class BodyParseInterceptor implements NestInterceptor {
 
       if (typeof body === 'object' && body !== null) {
         for (const key in body) {
-          if (isJSON(body[key])) {
+          if (
+            isJSON(body[key]) ||
+            body[key] === 'true' ||
+            body[key] === 'false'
+          ) {
             const parsedValue = JSON.parse(body[key]);
 
             body[key] = parsedValue;

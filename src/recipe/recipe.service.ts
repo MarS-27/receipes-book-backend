@@ -77,6 +77,7 @@ export class RecipeService {
           category: createRecipeDto.category,
           titleImgPath,
           description: createRecipeDto.description,
+          isVeganHealthy: createRecipeDto.isVeganHealthy,
           ingredients: createRecipeDto.ingredients,
           stages,
           user,
@@ -87,6 +88,7 @@ export class RecipeService {
           category: createRecipeDto.category,
           titleImgPath: createRecipeDto.titleImgPath,
           description: createRecipeDto.description,
+          isVeganHealthy: createRecipeDto.isVeganHealthy,
           ingredients: createRecipeDto.ingredients,
           stages: createRecipeDto.stages,
           user,
@@ -127,12 +129,13 @@ export class RecipeService {
     category: RecipeCategories,
     limit: number,
     skip: number,
+    isVeganHealthy?: boolean,
   ): Promise<PaginatedResult<Recipe>> {
     try {
       const whereClause =
         category !== RecipeCategories.All
-          ? { user: { id: userId }, category }
-          : { user: { id: userId } };
+          ? { user: { id: userId }, category, isVeganHealthy }
+          : { user: { id: userId }, isVeganHealthy };
 
       const total = await this.recipeRepository.count({
         where: whereClause,

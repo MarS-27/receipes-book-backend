@@ -28,6 +28,10 @@ export class Recipe extends Base {
   @Column({ nullable: false })
   description: string;
 
+  @ApiProperty({ description: 'Vegan/Healthy flag' })
+  @Column({ nullable: false, default: false })
+  isVeganHealthy: boolean;
+
   @ApiProperty({
     description: 'List of ingredients',
     example: ['4 cups water', '1 large onion', '3 tablespoons vegetable oil'],

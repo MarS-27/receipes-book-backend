@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { RecipeCategories, RecipeStage } from 'src/types/global-types';
 
 export class CreateRecipeDto {
@@ -23,9 +23,13 @@ export class CreateRecipeDto {
   @IsString()
   titleImgPath: string;
 
-  @ApiProperty({ description: 'Recipe short description' })
+  @ApiPropertyOptional({ description: 'Recipe short description' })
   @IsString()
   description: string;
+
+  @ApiPropertyOptional({ description: 'Vegan/Healthy flag' })
+  @IsBoolean()
+  isVeganHealthy: boolean;
 
   @ApiProperty({
     description: 'List of ingredients',

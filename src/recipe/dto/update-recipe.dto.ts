@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import { RecipeCategories, RecipeStage } from 'src/types/global-types';
 
 export class UpdateRecipeDto {
@@ -26,6 +26,10 @@ export class UpdateRecipeDto {
   @ApiPropertyOptional({ description: 'Recipe short description' })
   @IsString()
   description: string;
+
+  @ApiPropertyOptional({ description: 'Vegan/Healthy flag' })
+  @IsBoolean()
+  isVeganHealthy: boolean;
 
   @ApiPropertyOptional({
     description: 'List of ingredients',
