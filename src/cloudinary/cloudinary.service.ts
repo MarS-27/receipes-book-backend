@@ -17,9 +17,12 @@ export class CloudinaryService {
   ): Promise<UploadApiResponse> {
     return new Promise((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: fileFolder }, (err, callResult) => {
-          err ? reject(err) : resolve(callResult);
-        })
+        .upload_stream(
+          { folder: fileFolder, format: 'png' },
+          (err, callResult) => {
+            err ? reject(err) : resolve(callResult);
+          },
+        )
         .end(fileBuffer);
     });
   }
