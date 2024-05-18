@@ -132,10 +132,16 @@ export class RecipeService {
     isVeganHealthy?: boolean,
   ): Promise<PaginatedResult<Recipe>> {
     try {
+      const ModifIsVeganHealthy = isVeganHealthy ? isVeganHealthy : undefined;
+
       const whereClause =
         category !== RecipeCategories.All
-          ? { user: { id: userId }, category, isVeganHealthy }
-          : { user: { id: userId }, isVeganHealthy };
+          ? {
+              user: { id: userId },
+              category,
+              isVeganHealthy: ModifIsVeganHealthy,
+            }
+          : { user: { id: userId }, isVeganHealthy: ModifIsVeganHealthy };
 
       const total = await this.recipeRepository.count({
         where: whereClause,

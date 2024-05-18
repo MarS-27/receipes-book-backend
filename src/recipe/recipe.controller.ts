@@ -65,7 +65,7 @@ export class RecipeController {
   async getPaginatedRecipes(
     @Request() req: SessionRequest,
     @Query('category') category: RecipeCategories,
-    @Query('isVeganHealthy') isVeganHealthy: boolean,
+    @Query('isVeganHealthy') isVeganHealthy: string,
     @Query('limit') limit: number,
     @Query('skip') skip: number,
   ): Promise<PaginatedResult<Recipe>> {
@@ -74,7 +74,7 @@ export class RecipeController {
       category,
       limit,
       skip,
-      isVeganHealthy,
+      JSON.parse(isVeganHealthy),
     );
   }
 
