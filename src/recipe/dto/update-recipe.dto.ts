@@ -27,9 +27,9 @@ export class UpdateRecipeDto {
   @IsString()
   description: string;
 
-  @ApiPropertyOptional({ description: 'Vegan/Healthy flag' })
+  @ApiPropertyOptional({ description: 'Vegan flag' })
   @IsBoolean()
-  isVeganHealthy: boolean;
+  isVegan: boolean;
 
   @ApiPropertyOptional({
     description: 'List of ingredients',

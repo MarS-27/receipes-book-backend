@@ -28,9 +28,9 @@ export class Recipe extends Base {
   @Column({ nullable: false })
   description: string;
 
-  @ApiProperty({ description: 'Vegan/Healthy flag' })
+  @ApiProperty({ description: 'Vegan flag' })
   @Column({ nullable: false, default: false })
-  isVeganHealthy: boolean;
+  isVegan: boolean;
 
   @ApiProperty({
     description: 'List of ingredients',
