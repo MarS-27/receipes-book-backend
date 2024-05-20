@@ -129,7 +129,7 @@ export class RecipeService {
     category: RecipeCategories,
     limit: number,
     skip: number,
-    isVegan?: boolean,
+    isVegan: boolean,
   ): Promise<PaginatedResult<Recipe>> {
     try {
       const ModifIsVegan = isVegan ? isVegan : undefined;
